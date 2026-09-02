@@ -2,6 +2,17 @@ opencollection: 1.0.0
 
 info:
   name: Aviationstack
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
 
 request:
   auth:
@@ -11,7 +22,7 @@ request:
     placement: query
   variables:
     - name: access_key
-      value: ""
+      value: 7be29e1f31f3a01cce8d5986e6aaa5ac
 
 docs:
   content: |-
