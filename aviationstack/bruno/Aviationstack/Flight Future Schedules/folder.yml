@@ -1,0 +1,11 @@
+info:
+  name: Flight Future Schedules
+  type: folder
+  seq: 11
+
+request:
+  auth: inherit
+
+docs:
+  content: Using `flight future schedules` endpoint, you can get the data about future flight schedule.
+  type: text/markdown

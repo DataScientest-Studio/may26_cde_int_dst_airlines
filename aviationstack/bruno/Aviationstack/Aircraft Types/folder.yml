@@ -1,0 +1,11 @@
+info:
+  name: Aircraft Types
+  type: folder
+  seq: 6
+
+request:
+  auth: inherit
+
+docs:
+  content: Using `Aircraft Types` endpoint, you can get Aircraft name and IATA code.
+  type: text/markdown

@@ -1,0 +1,53 @@
+opencollection: 1.0.0
+
+info:
+  name: Aviationstack
+
+request:
+  auth:
+    type: apikey
+    key: access_key
+    value: "{{access_key}}"
+    placement: query
+  variables:
+    - name: access_key
+      value: ""
+
+docs:
+  content: |-
+    # Quick Start Guide
+
+    ## Step 1: Your API Access Key
+
+    To get started quickly, you need to fork the Aviationstack Postman Collection. Simply click the button below to fork it.
+
+    [<img src="https://run.pstmn.io/button.svg">](https://god.gw.postman.com/run-collection/10131015-72ee0d35-018e-4370-a2b6-a66d3ebd5b5a?action=collection/fork)
+
+    ### Step 2: Get your API Access Key
+
+    1. Go to the [Aviationstack](https://aviationstack.com/) website and choose the right subscription plan for your particular project.
+    2. Get your personal API Access Key on the [Dashboard](https://aviationstack.com/dashboard) to authenticate with the API. Keep it safe! You can reset it at any time in your Account Dashboard.
+        
+
+    ## Step 3: Make your first API call
+
+    Aviationstack Postman collection contains all the endpoints supported by Aviationstack API.
+
+    1. Flights
+    2. Routes
+    3. Airports
+    4. Airlines
+    5. Airplanes
+    6. Aircraft Types
+    7. Taxes
+    8. Cities
+    9. Countries
+    10. Flights Schedules
+    11. Flights Future Schedules
+  type: text/markdown
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git

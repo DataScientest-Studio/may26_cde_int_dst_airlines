@@ -1,0 +1,11 @@
+info:
+  name: Airports
+  type: folder
+  seq: 3
+
+request:
+  auth: inherit
+
+docs:
+  content: To get data about Airports across the globe, you can use the API's `airports` endpoint.
+  type: text/markdown

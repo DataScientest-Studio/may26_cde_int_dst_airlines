@@ -1,0 +1,11 @@
+info:
+  name: Airlines
+  type: folder
+  seq: 4
+
+request:
+  auth: inherit
+
+docs:
+  content: You can use the API's `airlines` endpoint to get data about airlines operating all over the world
+  type: text/markdown

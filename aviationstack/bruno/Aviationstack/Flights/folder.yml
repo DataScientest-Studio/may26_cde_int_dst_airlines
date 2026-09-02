@@ -1,0 +1,11 @@
+info:
+  name: Flights
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit
+
+docs:
+  content: In order to look up real-time or historical information about one or multiple flights, you can use the Aviationstack's `flights` endpoint.
+  type: text/markdown

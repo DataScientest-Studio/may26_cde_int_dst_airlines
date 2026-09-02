@@ -1,0 +1,11 @@
+info:
+  name: Flight Schedules
+  type: folder
+  seq: 10
+
+request:
+  auth: inherit
+
+docs:
+  content: Using `flight schedules` endpoint, you can get the data about flight schedule on the current date.
+  type: text/markdown

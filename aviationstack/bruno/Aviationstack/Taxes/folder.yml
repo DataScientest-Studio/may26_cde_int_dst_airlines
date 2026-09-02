@@ -1,0 +1,11 @@
+info:
+  name: Taxes
+  type: folder
+  seq: 7
+
+request:
+  auth: inherit
+
+docs:
+  content: Using `taxes` endpoint, you can get the data about different aviation taxes.
+  type: text/markdown
