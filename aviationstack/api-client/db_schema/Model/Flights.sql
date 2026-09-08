@@ -1,0 +1,28 @@
+--
+-- "AviationStack"
+-- Prepared SQL queries for 'Flights' definition.
+-- Created using 'openapi-generator' ('postgresql-schema' generator)
+-- (https://openapi-generator.tech/docs/generators/postgresql-schema)
+--
+
+
+--
+-- SELECT template for table 'flights'
+--
+SELECT pagination, "data" FROM flights WHERE 1=1;
+
+--
+-- INSERT template for table 'flights'
+--
+INSERT INTO flights (pagination, "data") VALUES (?, ?);
+
+--
+-- UPDATE template for table 'flights'
+--
+UPDATE flights SET pagination = ?, "data" = ? WHERE 1=2;
+
+--
+-- DELETE template for table 'flights'
+--
+DELETE FROM flights WHERE 1=2;
+
