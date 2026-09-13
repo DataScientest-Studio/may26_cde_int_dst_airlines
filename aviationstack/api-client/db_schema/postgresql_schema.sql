@@ -77,23 +77,16 @@ CREATE TABLE IF NOT EXISTS air_craft_type_data (
     "id" TEXT DEFAULT NULL,
     plane_type_id TEXT DEFAULT NULL,
     aircraft_name TEXT DEFAULT NULL,
-    iata_code TEXT DEFAULT NULL
+    iata_code TEXT DEFAULT NULL,
+    PRIMARY KEY (iata_code)
 );
 COMMENT ON TABLE air_craft_type_data IS 'Original model name - AirCraftTypeData.';
 
---
--- Table 'air_craft_types' generated from model 'AirCraftTypes'
---
-CREATE TABLE IF NOT EXISTS air_craft_types (
-    pagination TEXT DEFAULT NULL,
-    "data" JSON DEFAULT NULL
-);
-COMMENT ON TABLE air_craft_types IS 'Original model name - AirCraftTypes.';
 
 --
--- Table 'air_line_data' generated from model 'AirLineData'
+-- Table 'airline_data' generated from model 'AirLineData'
 --
-CREATE TABLE IF NOT EXISTS air_line_data (
+CREATE TABLE IF NOT EXISTS airline_data (
     "id" TEXT DEFAULT NULL,
     airline_id TEXT DEFAULT NULL,
     airline_name TEXT DEFAULT NULL,
@@ -108,23 +101,15 @@ CREATE TABLE IF NOT EXISTS air_line_data (
     date_founded TEXT DEFAULT NULL,
     hub_code TEXT DEFAULT NULL,
     country_name TEXT DEFAULT NULL,
-    country_iso2 TEXT DEFAULT NULL
+    country_iso2 TEXT DEFAULT NULL,
+    PRIMARY KEY (iata_code)
 );
-COMMENT ON TABLE air_line_data IS 'Original model name - AirLineData.';
+COMMENT ON TABLE airline_data IS 'Original model name - AirLineData.';
 
 --
--- Table 'air_lines' generated from model 'AirLines'
+-- Table 'airplane_data' generated from model 'AirPlaneData'
 --
-CREATE TABLE IF NOT EXISTS air_lines (
-    pagination TEXT DEFAULT NULL,
-    "data" JSON DEFAULT NULL
-);
-COMMENT ON TABLE air_lines IS 'Original model name - AirLines.';
-
---
--- Table 'air_plane_data' generated from model 'AirPlaneData'
---
-CREATE TABLE IF NOT EXISTS air_plane_data (
+CREATE TABLE IF NOT EXISTS airplane_data (
     "id" TEXT DEFAULT NULL,
     airplane_id TEXT DEFAULT NULL,
     registration_number TEXT DEFAULT NULL,
@@ -150,18 +135,10 @@ CREATE TABLE IF NOT EXISTS air_plane_data (
     engines_type TEXT DEFAULT NULL,
     plane_age TEXT DEFAULT NULL,
     plane_status TEXT DEFAULT NULL,
-    plane_class TEXT DEFAULT NULL
+    plane_class TEXT DEFAULT NULL,
+    PRIMARY KEY (iata_code_long)
 );
-COMMENT ON TABLE air_plane_data IS 'Original model name - AirPlaneData.';
-
---
--- Table 'air_planes' generated from model 'AirPlanes'
---
-CREATE TABLE IF NOT EXISTS air_planes (
-    pagination TEXT DEFAULT NULL,
-    "data" JSON DEFAULT NULL
-);
-COMMENT ON TABLE air_planes IS 'Original model name - AirPlanes.';
+COMMENT ON TABLE airplane_data IS 'Original model name - AirPlaneData.';
 
 --
 -- Table 'airport_data' generated from model 'AirportData'
@@ -180,50 +157,10 @@ CREATE TABLE IF NOT EXISTS airport_data (
     phone_number TEXT DEFAULT NULL,
     country_name TEXT DEFAULT NULL,
     country_iso2 TEXT DEFAULT NULL,
-    city_iata_code TEXT DEFAULT NULL
+    city_iata_code TEXT DEFAULT NULL,
+    PRIMARY KEY (iata_code)
 );
 COMMENT ON TABLE airport_data IS 'Original model name - AirportData.';
-
---
--- Table 'airports' generated from model 'Airports'
---
-CREATE TABLE IF NOT EXISTS airports (
-    pagination TEXT DEFAULT NULL,
-    "data" JSON DEFAULT NULL
-);
-COMMENT ON TABLE airports IS 'Original model name - Airports.';
-
---
--- Table 'api_error' generated from model 'ApiError'
--- Standard apilayer error envelope, shared by every error response.
---
-CREATE TABLE IF NOT EXISTS api_error (
-    success BOOLEAN NOT NULL,
-    "error" TEXT NOT NULL
-);
-COMMENT ON TABLE api_error IS 'Standard apilayer error envelope, shared by every error response.. Original model name - ApiError.';
-
---
--- Table 'api_error_error' generated from model 'ApiErrorUnderscoreerror'
---
-CREATE TABLE IF NOT EXISTS api_error_error (
-    code INTEGER NOT NULL,
-    "type" TEXT NOT NULL,
-    info TEXT DEFAULT NULL
-);
-COMMENT ON TABLE api_error_error IS 'Original model name - ApiError_error.';
-COMMENT ON COLUMN api_error_error.code IS 'apilayer numeric error code (the code the API returns in the body, e.g. 101 for an invalid access key — NOT the HTTP status).';
-COMMENT ON COLUMN api_error_error."type" IS 'Machine-readable error type.';
-COMMENT ON COLUMN api_error_error.info IS 'Human-readable error detail.';
-
---
--- Table 'cities' generated from model 'Cities'
---
-CREATE TABLE IF NOT EXISTS cities (
-    pagination TEXT DEFAULT NULL,
-    "data" JSON DEFAULT NULL
-);
-COMMENT ON TABLE cities IS 'Original model name - Cities.';
 
 --
 -- Table 'city_data' generated from model 'CityData'
@@ -238,18 +175,21 @@ CREATE TABLE IF NOT EXISTS city_data (
     longitude TEXT DEFAULT NULL,
     timezone TEXT DEFAULT NULL,
     gmt TEXT DEFAULT NULL,
-    geoname_id TEXT DEFAULT NULL
+    geoname_id TEXT DEFAULT NULL,
+    PRIMARY KEY (iata_code)
 );
 COMMENT ON TABLE city_data IS 'Original model name - CityData.';
 
 --
--- Table 'countries' generated from model 'Countries'
+-- Table 'tax_data' generated from model 'TaxData'
 --
-CREATE TABLE IF NOT EXISTS countries (
-    pagination TEXT DEFAULT NULL,
-    "data" JSON DEFAULT NULL
+CREATE TABLE IF NOT EXISTS tax_data (
+    "id" TEXT DEFAULT NULL,
+    tax_id TEXT DEFAULT NULL,
+    tax_name TEXT DEFAULT NULL,
+    iata_code TEXT DEFAULT NULL
 );
-COMMENT ON TABLE countries IS 'Original model name - Countries.';
+COMMENT ON TABLE tax_data IS 'Original model name - TaxData.';
 
 --
 -- Table 'country_data' generated from model 'CountryData'
@@ -267,18 +207,33 @@ CREATE TABLE IF NOT EXISTS country_data (
     currency_name TEXT DEFAULT NULL,
     currency_code TEXT DEFAULT NULL,
     fips_code TEXT DEFAULT NULL,
-    phone_prefix TEXT DEFAULT NULL
+    phone_prefix TEXT DEFAULT NULL,
+    PRIMARY KEY (country_iso2)
 );
 COMMENT ON TABLE country_data IS 'Original model name - CountryData.';
+
+--
+-- Table 'data_flight' generated from model 'DataFlight'
+--
+CREATE TABLE IF NOT EXISTS data_flight (
+    id BIGSERIAL,
+    flight_date TEXT DEFAULT NULL,
+    flight_status TEXT DEFAULT NULL,
+    PRIMARY KEY (id)
+);
+COMMENT ON TABLE data_flight IS 'Original model name - DataFlight.';
 
 --
 -- Table 'data_aircraft' generated from model 'DataAircraft'
 --
 CREATE TABLE IF NOT EXISTS data_aircraft (
+    id BIGSERIAL,
+    flight_id BIGINT,
     registration TEXT DEFAULT NULL,
     iata TEXT DEFAULT NULL,
     icao TEXT DEFAULT NULL,
-    icao24 TEXT DEFAULT NULL
+    icao24 TEXT DEFAULT NULL,
+    PRIMARY KEY (id)
 );
 COMMENT ON TABLE data_aircraft IS 'Original model name - DataAircraft.';
 
@@ -286,16 +241,21 @@ COMMENT ON TABLE data_aircraft IS 'Original model name - DataAircraft.';
 -- Table 'data_airline' generated from model 'DataAirline'
 --
 CREATE TABLE IF NOT EXISTS data_airline (
+    id BIGSERIAL,
+    flight_id BIGINT,
     "name" TEXT DEFAULT NULL,
     iata TEXT DEFAULT NULL,
-    icao TEXT DEFAULT NULL
+    icao TEXT DEFAULT NULL,
+    PRIMARY KEY (id)
 );
 COMMENT ON TABLE data_airline IS 'Original model name - DataAirline.';
 
 --
 -- Table 'data_departure' generated from model 'DataDeparture'
 --
-CREATE TABLE IF NOT EXISTS data_departure (
+CREATE TABLE IF NOT EXISTS data_departure_arrival (
+    id BIGSERIAL,
+    flight_id BIGINT,
     airport TEXT DEFAULT NULL,
     timezone TEXT DEFAULT NULL,
     iata TEXT DEFAULT NULL,
@@ -308,36 +268,45 @@ CREATE TABLE IF NOT EXISTS data_departure (
     actual TEXT DEFAULT NULL,
     estimated_runway TEXT DEFAULT NULL,
     actual_runway TEXT DEFAULT NULL,
-    baggage TEXT DEFAULT NULL
+    baggage TEXT DEFAULT NULL,
+    PRIMARY KEY (id)
 );
 COMMENT ON TABLE data_departure IS 'Original model name - DataDeparture.';
-
---
--- Table 'data_flight' generated from model 'DataFlight'
---
-CREATE TABLE IF NOT EXISTS data_flight (
-    flight_date TEXT DEFAULT NULL,
-    flight_status TEXT DEFAULT NULL,
-    departure TEXT DEFAULT NULL,
-    arrival TEXT DEFAULT NULL,
-    airline TEXT DEFAULT NULL,
-    flight TEXT DEFAULT NULL,
-    aircraft TEXT DEFAULT NULL,
-    live TEXT DEFAULT NULL
-);
-COMMENT ON TABLE data_flight IS 'Original model name - DataFlight.';
 
 --
 -- Table 'data_flight2' generated from model 'DataFlight2'
 --
 CREATE TABLE IF NOT EXISTS data_flight2 (
+    id BIGSERIAL,
+    flight_id BIGINT,
     "number" TEXT DEFAULT NULL,
     iata TEXT DEFAULT NULL,
     icao TEXT DEFAULT NULL,
-    codeshared TEXT DEFAULT NULL
+    codeshared TEXT DEFAULT NULL,
+    PRIMARY KEY (id)
 );
 COMMENT ON TABLE data_flight2 IS 'Original model name - DataFlight2.';
 
+--
+-- Table 'data_live' generated from model 'Datalive'
+--
+CREATE TABLE IF NOT EXISTS data_live (
+    id BIGSERIAL,
+    flight_id BIGINT,
+    updated TEXT DEFAULT NULL,
+    latitude DECIMAL(20, 9) DEFAULT NULL,
+    longitude DECIMAL(20, 9) DEFAULT NULL,
+    altitude DECIMAL(20, 9) DEFAULT NULL,
+    direction DECIMAL(20, 9) DEFAULT NULL,
+    speed_horizontal DECIMAL(20, 9) DEFAULT NULL,
+    speed_vertical DECIMAL(20, 9) DEFAULT NULL,
+    is_ground BOOLEAN DEFAULT NULL,
+    PRIMARY KEY (id)
+);
+COMMENT ON TABLE data_live IS 'Original model name - Datalive.';
+
+
+----------------- FUTURE FLIGHTS API NOT INCLUDED ? --------------------
 --
 -- Table 'data_flight2_codeshared' generated from model 'DataFlight2Underscorecodeshared'
 --
@@ -369,30 +338,6 @@ CREATE TABLE IF NOT EXISTS data_routes_flight (
     "number" TEXT DEFAULT NULL
 );
 COMMENT ON TABLE data_routes_flight IS 'Original model name - DataRoutes_flight.';
-
---
--- Table 'datalive' generated from model 'Datalive'
---
-CREATE TABLE IF NOT EXISTS datalive (
-    updated TEXT DEFAULT NULL,
-    latitude DECIMAL(20, 9) DEFAULT NULL,
-    longitude DECIMAL(20, 9) DEFAULT NULL,
-    altitude DECIMAL(20, 9) DEFAULT NULL,
-    direction DECIMAL(20, 9) DEFAULT NULL,
-    speed_horizontal DECIMAL(20, 9) DEFAULT NULL,
-    speed_vertical DECIMAL(20, 9) DEFAULT NULL,
-    is_ground BOOLEAN DEFAULT NULL
-);
-COMMENT ON TABLE datalive IS 'Original model name - Datalive.';
-
---
--- Table 'flights' generated from model 'Flights'
---
-CREATE TABLE IF NOT EXISTS flights (
-    pagination TEXT DEFAULT NULL,
-    "data" JSON DEFAULT NULL
-);
-COMMENT ON TABLE flights IS 'Original model name - Flights.';
 
 --
 -- Table 'flights_future' generated from model 'FlightsFuture'
@@ -520,25 +465,6 @@ CREATE TABLE IF NOT EXISTS routes (
 );
 COMMENT ON TABLE routes IS 'Original model name - Routes.';
 
---
--- Table 'tax_data' generated from model 'TaxData'
---
-CREATE TABLE IF NOT EXISTS tax_data (
-    "id" TEXT DEFAULT NULL,
-    tax_id TEXT DEFAULT NULL,
-    tax_name TEXT DEFAULT NULL,
-    iata_code TEXT DEFAULT NULL
-);
-COMMENT ON TABLE tax_data IS 'Original model name - TaxData.';
-
---
--- Table 'taxes' generated from model 'Taxes'
---
-CREATE TABLE IF NOT EXISTS taxes (
-    pagination TEXT DEFAULT NULL,
-    "data" JSON DEFAULT NULL
-);
-COMMENT ON TABLE taxes IS 'Original model name - Taxes.';
 
 --
 -- Table 'timetable' generated from model 'Timetable'

@@ -216,7 +216,7 @@ The airline data can be matched with the flights data by the IATA code in airlin
 }
 ```
 
-Here the ICAO24 seems to match with the ICAO code hex from the airlines data. The fields of IATA code as mostly empty in the example flights data.
+Here the "airline_iata_code" seems to match with the IATA code from the airlines data. 
 
 ## Aircraft types
 
