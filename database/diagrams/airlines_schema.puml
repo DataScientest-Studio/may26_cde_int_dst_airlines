@@ -1,0 +1,157 @@
+@startuml airline_data_model
+!theme plain
+skinparam linetype ortho
+skinparam roundcorner 10
+skinparam class {
+    BackgroundColor White
+    BorderColor #2C3E50
+    ArrowColor #2C3E50
+    HeaderBackgroundColor #34495E
+}
+
+title Airline Data Engineering Platform - Entity Relationship Diagram (ERD)
+
+entity "airports" as airports {
+    * **iata_code** : CHAR(3) [PK]
+    --
+    * icao_code : CHAR(4)
+    * name : VARCHAR(150)
+    * city : VARCHAR(100)
+    * country : VARCHAR(100)
+    latitude : DECIMAL(9,6)
+    longitude : DECIMAL(9,6)
+    timezone : VARCHAR(50)
+}
+
+entity "airlines" as airlines {
+    * **airline_id** : INT [PK]
+    --
+    * iata_code : CHAR(2) [UNIQUE]
+    * icao_code : CHAR(3)
+    * name : VARCHAR(150)
+    callsign : VARCHAR(100)
+    country : VARCHAR(100)
+    is_active : BOOLEAN
+}
+
+entity "airplane_models" as models {
+    * **model_id** : INT [PK]
+    --
+    * model_code : VARCHAR(50) [UNIQUE]
+    * manufacturer : VARCHAR(100)
+    seat_capacity : INT
+    range_km : INT
+    cruising_speed_kmh : INT
+}
+
+entity "airplanes" as airplanes {
+    * **airplane_id** : INT [PK]
+    --
+    * tail_number : VARCHAR(20) [UNIQUE]
+    * airline_id : INT [FK]
+    * model_id : INT [FK]
+    manufacture_year : INT
+    status : VARCHAR(30)
+}
+
+entity "flight_schedules" as schedules {
+    * **schedule_id** : INT [PK]
+    --
+    * flight_number : VARCHAR(10)
+    * airline_id : INT [FK]
+    * origin_iata : CHAR(3) [FK]
+    * destination_iata : CHAR(3) [FK]
+    scheduled_departure_time : TIME
+    scheduled_arrival_time : TIME
+    days_of_week : VARCHAR(7)
+    distance_km : INT
+}
+
+entity "flights" as flights {
+    * **flight_id** : BIGINT [PK]
+    --
+    * schedule_id : INT [FK]
+    * flight_date : DATE
+    flight_number : VARCHAR(10)
+    airplane_id : INT [FK]
+    scheduled_departure : TIMESTAMP
+    actual_departure : TIMESTAMP
+    scheduled_arrival : TIMESTAMP
+    actual_arrival : TIMESTAMP
+    departure_delay_min : INT
+    arrival_delay_min : INT
+    status : VARCHAR(30)
+    terminal_dep : VARCHAR(10)
+    gate_dep : VARCHAR(10)
+    terminal_arr : VARCHAR(10)
+    gate_arr : VARCHAR(10)
+}
+
+entity "passengers" as passengers {
+    * **passenger_id** : BIGINT [PK]
+    --
+    * first_name : VARCHAR(100)
+    * last_name : VARCHAR(100)
+    * email : VARCHAR(150) [UNIQUE]
+    phone : VARCHAR(30)
+    passport_number : VARCHAR(50)
+    nationality : CHAR(2)
+    created_at : TIMESTAMP
+}
+
+entity "bookings" as bookings {
+    * **booking_id** : BIGINT [PK]
+    --
+    * booking_reference : VARCHAR(10) [UNIQUE]
+    * passenger_id : BIGINT [FK]
+    booking_timestamp : TIMESTAMP
+    total_price : DECIMAL(10,2)
+    currency : CHAR(3)
+    status : VARCHAR(30)
+}
+
+entity "itineraries" as itineraries {
+    * **itinerary_id** : BIGINT [PK]
+    --
+    * booking_id : BIGINT [FK]
+    * origin_iata : CHAR(3) [FK]
+    * destination_iata : CHAR(3) [FK]
+    itinerary_type : VARCHAR(30) // 'direct' | 'connecting_stopover'
+    total_stops : INT // 0 for direct, 1+ for stopover
+    total_duration_minutes : INT
+    total_layover_minutes : INT
+}
+
+entity "itinerary_segments" as segments {
+    * **segment_id** : BIGINT [PK]
+    --
+    * itinerary_id : BIGINT [FK]
+    * segment_sequence : INT // 1, 2, 3...
+    * flight_id : BIGINT [FK]
+    seat_number : VARCHAR(10)
+    cabin_class : VARCHAR(20) // 'economy', 'business', 'first'
+    layover_duration_minutes : INT
+    boarding_pass_code : VARCHAR(100)
+}
+
+' Relationships & Foreign Keys
+airlines ||--o{ airplanes : "operates"
+models ||--o{ airplanes : "specifies"
+
+airlines ||--o{ schedules : "publishes"
+airports ||--o{ schedules : "origin"
+airports ||--o{ schedules : "destination"
+
+schedules ||--o{ flights : "generates instance"
+airplanes ||--o{ flights : "assigned to"
+
+passengers ||--o{ bookings : "makes"
+bookings ||--o{ itineraries : "contains"
+
+airports ||--o{ itineraries : "journey origin"
+airports ||--o{ itineraries : "journey destination"
+
+itineraries ||--|{ segments : "composed of"
+flights ||--o{ segments : "fulfills leg"
+
+@enduml
