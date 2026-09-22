@@ -1,21 +1,37 @@
 from __future__ import print_function
+import os
 import swagger_client
 from swagger_client.rest import ApiException
 import time
 from pprint import pprint
 import pymongo as pm
 from datetime import datetime
+from dotenv import load_dotenv
 
-# MongoDB Configuration
-MONGO_HOST = "127.0.0.1"
-MONGO_PORT = 27017
-MONGO_USERNAME = "mgulitz"
-MONGO_PASSWORD = "start01"
-MONGO_DB = "aviationstack"
-MONGO_COLLECTION = "flights"
+# Load environment variables from .env file
+load_dotenv()
 
-# AviationStack API Configuration
-AVIATIONSTACK_API_KEY = 'YOUR_API_KEY'
+# MongoDB Configuration - from environment variables
+MONGO_HOST = os.getenv("MONGO_HOST", "127.0.0.1")
+MONGO_PORT = int(os.getenv("MONGO_PORT", 27017))
+MONGO_USERNAME = os.getenv("MONGO_USERNAME")
+MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
+MONGO_DB = os.getenv("MONGO_DB", "aviationstack")
+MONGO_COLLECTION = os.getenv("MONGO_COLLECTION", "flights")
+
+# AviationStack API Configuration - from environment variables
+AVIATIONSTACK_API_KEY = os.getenv("AVIATIONSTACK_API_KEY")
+
+# Validate required environment variables
+required_vars = {
+    "MONGO_USERNAME": MONGO_USERNAME,
+    "MONGO_PASSWORD": MONGO_PASSWORD,
+    "AVIATIONSTACK_API_KEY": AVIATIONSTACK_API_KEY,
+}
+
+missing_vars = [var for var, val in required_vars.items() if not val]
+if missing_vars:
+    raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
 print("Collecting flight data from AviationStack API...")
 
@@ -42,7 +58,7 @@ api_instance = swagger_client.APIEndpointsApi(swagger_client.ApiClient(configura
 
 # API call parameters - customize these as needed
 access_key = AVIATIONSTACK_API_KEY
-limit = 100
+limit = 500
 offset = 0
 flight_status = None
 flight_date = datetime.now().strftime('%Y-%m-%d')
