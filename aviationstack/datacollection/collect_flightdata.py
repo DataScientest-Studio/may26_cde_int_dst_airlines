@@ -2,11 +2,11 @@ from __future__ import print_function
 import os
 import swagger_client
 from swagger_client.rest import ApiException
-import time
 from pprint import pprint
 import pymongo as pm
 from datetime import datetime
 from dotenv import load_dotenv
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -58,10 +58,10 @@ api_instance = swagger_client.APIEndpointsApi(swagger_client.ApiClient(configura
 
 # API call parameters - customize these as needed
 access_key = AVIATIONSTACK_API_KEY
-limit = 500
-offset = 0
-flight_status = None
-flight_date = datetime.now().strftime('%Y-%m-%d')
+limit = 100  # Number of records to retrieve per API call (max 100)
+offset = 0 # Offset for pagination - adjust as needed for multiple pages of results
+flight_status = None #str | Filter your results by flight status. Available values: scheduled, active, landed, cancelled, incident, diverted (optional)
+flight_date = datetime.now().strftime('%Y-%m-%d') # Not supported by basic plan!
 
 # Optional filter parameters - set to None to not filter by these
 dep_iata = None
@@ -75,13 +75,13 @@ flight_number = None
 flight_iata = None
 flight_icao = None
 
-# Delay filter parameters (in minutes)
+# Optional Delay filter parameters (in minutes)
 min_delay_dep = None
 min_delay_arr = None
 max_delay_dep = None
 max_delay_arr = None
 
-# Scheduled time filters
+# Optional Scheduled time filters
 arr_scheduled_time_arr = None
 dep_scheduled_time_dep = None
 
@@ -91,42 +91,52 @@ try:
     
     api_response = api_instance.get_flights(
         access_key,
-        param_callback=None,
+#        param_callback=None,
         limit=limit,
         offset=offset,
-        flight_status=flight_status,
-        flight_date=flight_date,
-        dep_iata=dep_iata,
-        arr_iata=arr_iata,
-        dep_icao=dep_icao,
-        arr_icao=arr_icao,
-        airline_name=airline_name,
-        airline_iata=airline_iata,
-        airline_icao=airline_icao,
-        flight_number=flight_number,
-        flight_iata=flight_iata,
-        flight_icao=flight_icao,
-        min_delay_dep=min_delay_dep,
-        min_delay_arr=min_delay_arr,
-        max_delay_dep=max_delay_dep,
-        max_delay_arr=max_delay_arr,
-        arr_scheduled_time_arr=arr_scheduled_time_arr,
-        dep_scheduled_time_dep=dep_scheduled_time_dep
+#        flight_status=flight_status,
+#        flight_date=flight_date,
+#        dep_iata=dep_iata,
+#        arr_iata=arr_iata,
+#        dep_icao=dep_icao,
+#        arr_icao=arr_icao,
+#        airline_name=airline_name,
+#        airline_iata=airline_iata,
+#        airline_icao=airline_icao,
+#        flight_number=flight_number,
+#        flight_iata=flight_iata,
+#        flight_icao=flight_icao,
+#        min_delay_dep=min_delay_dep,
+#        min_delay_arr=min_delay_arr,
+#        max_delay_dep=max_delay_dep,
+#        max_delay_arr=max_delay_arr,
+#        arr_scheduled_time_arr=arr_scheduled_time_arr,
+#        dep_scheduled_time_dep=dep_scheduled_time_dep
     )
     
     if api_response and hasattr(api_response, 'data'):
         flights = api_response.data
         print(f"Retrieved {len(flights)} flight records")
-        
+
+        # Convert each flight object to a dictionary
+        flight_dicts = []
         for flight in flights:
-            flight['_retrieved_at'] = datetime.utcnow()
-            flight['_source'] = 'aviationstack'
-        
-        if flights:
-            print(f"Inserting {len(flights)} records into MongoDB...")
-            result = flights_collection.insert_many(flights)
+            # Convert swagger model object to dict
+            if hasattr(flight, 'to_dict'):
+                flight_data = flight.to_dict()
+            else:
+                # Fallback: use __dict__ or vars()
+                flight_data = vars(flight) if hasattr(flight, '__dict__') else dict(flight)
+
+            # Add metadata
+            flight_data['_retrieved_at'] = datetime.utcnow()
+            flight_data['_source'] = 'aviationstack'
+            flight_dicts.append(flight_data)
+
+        if flight_dicts:
+            print(f"Inserting {len(flight_dicts)} records into MongoDB...")
+            result = flights_collection.insert_many(flight_dicts)
             print(f"Successfully inserted {len(result.inserted_ids)} documents into MongoDB")
-            print(f"Inserted document IDs: {result.inserted_ids}")
         else:
             print("No flight data received from API")
     else:
