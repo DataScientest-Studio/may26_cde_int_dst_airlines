@@ -253,7 +253,7 @@ COMMENT ON TABLE data_airline IS 'Original model name - DataAirline.';
 --
 -- Table 'data_departure' generated from model 'DataDeparture'
 --
-CREATE TABLE IF NOT EXISTS data_departure_arrival (
+CREATE TABLE IF NOT EXISTS data_departure (
     id BIGSERIAL,
     flight_id BIGINT,
     airport TEXT DEFAULT NULL,
