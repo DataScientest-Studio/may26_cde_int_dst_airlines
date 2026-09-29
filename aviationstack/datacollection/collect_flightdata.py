@@ -61,7 +61,7 @@ access_key = AVIATIONSTACK_API_KEY
 limit = 100  # Number of records to retrieve per API call (max 100)
 offset = 0 # Offset for pagination - adjust as needed for multiple pages of results
 flight_status = None #str | Filter your results by flight status. Available values: scheduled, active, landed, cancelled, incident, diverted (optional)
-flight_date = datetime.now().strftime('%Y-%m-%d') # Not supported by basic plan!
+#flight_date = datetime.now().strftime('%Y-%m-%d') # Not supported by basic plan!
 
 # Optional filter parameters - set to None to not filter by these
 dep_iata = None
@@ -85,74 +85,94 @@ max_delay_arr = None
 arr_scheduled_time_arr = None
 dep_scheduled_time_dep = None
 
-try:
-    print(f"Fetching flight data from AviationStack API...")
-    print(f"Parameters: limit={limit}, offset={offset}, flight_date={flight_date}")
-    
-    api_response = api_instance.get_flights(
-        access_key,
-#        param_callback=None,
-        limit=limit,
-        offset=offset,
-#        flight_status=flight_status,
-#        flight_date=flight_date,
-#        dep_iata=dep_iata,
-#        arr_iata=arr_iata,
-#        dep_icao=dep_icao,
-#        arr_icao=arr_icao,
-#        airline_name=airline_name,
-#        airline_iata=airline_iata,
-#        airline_icao=airline_icao,
-#        flight_number=flight_number,
-#        flight_iata=flight_iata,
-#        flight_icao=flight_icao,
-#        min_delay_dep=min_delay_dep,
-#        min_delay_arr=min_delay_arr,
-#        max_delay_dep=max_delay_dep,
-#        max_delay_arr=max_delay_arr,
-#        arr_scheduled_time_arr=arr_scheduled_time_arr,
-#        dep_scheduled_time_dep=dep_scheduled_time_dep
-    )
-    
-    if api_response and hasattr(api_response, 'data'):
-        flights = api_response.data
-        print(f"Retrieved {len(flights)} flight records")
 
-        # Convert each flight object to a dictionary
-        flight_dicts = []
-        for flight in flights:
-            # Convert swagger model object to dict
-            if hasattr(flight, 'to_dict'):
-                flight_data = flight.to_dict()
+def get_flight_data(limit=100, offset=0, access_key=AVIATIONSTACK_API_KEY):
+    """
+    Fetch flight data from AviationStack API and store it in MongoDB.
+    """
+
+    try:
+        print(f"Fetching flight data from AviationStack API...")
+        print(f"Parameters: limit={limit}, offset={offset}")
+        
+        api_response = api_instance.get_flights(
+            access_key,
+    #        param_callback=None,
+            limit=limit,
+            offset=offset,
+    #        flight_status=flight_status,
+    #        flight_date=flight_date,
+    #        dep_iata=dep_iata,
+    #        arr_iata=arr_iata,
+    #        dep_icao=dep_icao,
+    #        arr_icao=arr_icao,
+    #        airline_name=airline_name,
+    #        airline_iata=airline_iata,
+    #        airline_icao=airline_icao,
+    #        flight_number=flight_number,
+    #        flight_iata=flight_iata,
+    #        flight_icao=flight_icao,
+    #        min_delay_dep=min_delay_dep,
+    #        min_delay_arr=min_delay_arr,
+    #        max_delay_dep=max_delay_dep,
+    #        max_delay_arr=max_delay_arr,
+    #        arr_scheduled_time_arr=arr_scheduled_time_arr,
+    #        dep_scheduled_time_dep=dep_scheduled_time_dep
+        )
+        
+        if api_response and hasattr(api_response, 'data'):
+            flights = api_response.data
+            print(f"Retrieved {len(flights)} flight records")
+
+            # Convert each flight object to a dictionary
+            flight_dicts = []
+            for flight in flights:
+                # Convert swagger model object to dict
+                if hasattr(flight, 'to_dict'):
+                    flight_data = flight.to_dict()
+                else:
+                    # Fallback: use __dict__ or vars()
+                    flight_data = vars(flight) if hasattr(flight, '__dict__') else dict(flight)
+
+                # Add metadata
+                flight_data['_retrieved_at'] = datetime.utcnow()
+                flight_data['_source'] = 'aviationstack'
+                flight_dicts.append(flight_data)
+
+            if flight_dicts:
+                print(f"Inserting {len(flight_dicts)} records into MongoDB...")
+                result = flights_collection.insert_many(flight_dicts)
+                print(f"Successfully inserted {len(result.inserted_ids)} documents into MongoDB")
             else:
-                # Fallback: use __dict__ or vars()
-                flight_data = vars(flight) if hasattr(flight, '__dict__') else dict(flight)
-
-            # Add metadata
-            flight_data['_retrieved_at'] = datetime.utcnow()
-            flight_data['_source'] = 'aviationstack'
-            flight_dicts.append(flight_data)
-
-        if flight_dicts:
-            print(f"Inserting {len(flight_dicts)} records into MongoDB...")
-            result = flights_collection.insert_many(flight_dicts)
-            print(f"Successfully inserted {len(result.inserted_ids)} documents into MongoDB")
+                print("No flight data received from API")
         else:
-            print("No flight data received from API")
-    else:
-        print("Unexpected API response format")
-        pprint(api_response)
-    
-    print("\nData collection complete!")
-    
-except ApiException as e:
-    print(f"Exception when calling APIEndpointsApi->get_flights: {e}")
-except pm.errors.ConnectionFailure as e:
-    print(f"MongoDB connection error: {e}")
-except pm.errors.PyMongoError as e:
-    print(f"MongoDB operation error: {e}")
-except Exception as e:
-    print(f"Unexpected error: {e}")
-finally:
+            print("Unexpected API response format")
+            pprint(api_response)
+        
+        print("\nData collection complete!")
+        
+    except ApiException as e:
+        print(f"Exception when calling APIEndpointsApi->get_flights: {e}")
+    except pm.errors.ConnectionFailure as e:
+        print(f"MongoDB connection error: {e}")
+    except pm.errors.PyMongoError as e:
+        print(f"MongoDB operation error: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+#    finally:
+#        client.close()
+#        print("MongoDB connection closed")
+
+
+def fill_mongodb_with_flight_data():
+    """
+    Function to fill MongoDB with flight data from AviationStack API.
+    """
+    for offset in range(0, 500, limit):  # Adjust the range as needed for more data
+        print(f"\nFetching data with offset: {offset}")
+        get_flight_data(limit=limit, offset=offset)
     client.close()
     print("MongoDB connection closed")
+
+    
+fill_mongodb_with_flight_data()
