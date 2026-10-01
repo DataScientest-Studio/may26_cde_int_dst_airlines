@@ -1,15 +1,25 @@
-@startuml airline_data_model
-!theme plain
-skinparam linetype ortho
-skinparam roundcorner 10
-skinparam class {
-    BackgroundColor White
-    BorderColor #2C3E50
-    ArrowColor #2C3E50
-    HeaderBackgroundColor #34495E
+@startuml airline_data_model        ' Initializes the UML diagram and assigns the internal name airline_data_model
+!theme plain                        ' Applies a minimal, flat base theme to the diagram, removing default shadows and gradients.
+skinparam linetype ortho            ' Forces relationship lines to route using right angles (orthogonal) rather than direct diagonal paths.
+skinparam roundcorner 10            ' Applies a 10-pixel rounding radius to the corners of the diagram elements (like class boxes).
+skinparam class {                   ' Opens a configuration block to apply specific styling rules to all class entities in the diagram.
+    BackgroundColor White           ' Sets the interior fill color of the main body of the class boxes to white.
+    BorderColor #2C3E50             ' Sets the outer border color of the class boxes to a dark slate blue.
+    ArrowColor #2C3E50              ' Sets the color of the relationship lines and arrows connecting the classes to a dark slate blue.
+    HeaderBackgroundColor #34495E   ' Sets the background color of the top header section (where the class name sits) to a dark blue-grey.
 }
 
+' Sets the main title that appears at the top of the rendered diagram
 title Airline Data Engineering Platform - Entity Relationship Diagram (ERD)
+
+
+' Defines an entity (table) with the display name and an internal alias
+    ' The asterisk (*) denotes a mandatory (NOT NULL) field. 
+    ' Double asterisks (**) render the text in bold.
+    ' A double hyphen creates a solid horizontal line to separate primary keys from standard columns
+    ' [PK] indicates the Primary Key, the unique identifier for each record
+    ' [FK] indicates a Foreign Key, which references a primary key in another table
+    ' [UNIQUE] ensures that no two records can share the same value in this column
 
 entity "countries" as countries {
     * **country_iso2** : CHAR(2) [PK]
@@ -172,6 +182,35 @@ entity "itinerary_segments" as segments {
 }
 
 ' Relationships & Foreign Keys
+' [Syntax] 
+' EntityA [LeftMarker][LineStyle][RightMarker] EntityB : "relationship description"
+
+' [Left Markers]
+' ||: Exactly One (Mandatory)
+' |o : Zero or One (Optional)
+' }| : One or Many (Mandatory many)
+' }o: Zero or Many (Optional many)
+
+' [Line Style]
+' Solid Line (--): Denotes an identifying relationship. 
+' The child entity relies entirely on the parent entity. In database terms, the parent's primary key is incorporated into the child's primary key.
+
+' Dashed Line (..): Denotes a non-identifying relationship. 
+' The child entity can exist independently. The parent's primary key is simply a standard foreign key in the child table.
+
+' [Right Markers]
+' ||: Exactly One (Mandatory)
+' o|: Zero or One (Optional)
+' |{: One or Many (Mandatory many / At least one)
+' o{: Zero or Many (Optional many)
+
+' [LeftMarker][LineStyle][RightMarker] examples:
+' One-to-Many: ||--o{
+' One-to-One (Optional): ||--o|
+' One-to-At-Least-One: ||--|{
+' Many-to-Many: }o--o{
+
+
 countries ||--o{ cities : "contains"
 countries ||--o{ airports : "located in"
 cities ||--o{ airports : "serves"
