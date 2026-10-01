@@ -27,6 +27,11 @@ Project Organization
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
     │   └── figures        <- Generated graphics and figures to be used in reporting
     │
+    ├── databases          <- Database assets
+    │   ├── diagrams       <- Database diagrams and schemas
+    │   ├── ddl            <- Database definition scripts
+    │   └── seeds          <- Initial and reference data scripts
+    │
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
     │                         generated with `pip freeze > requirements.txt`
     │
