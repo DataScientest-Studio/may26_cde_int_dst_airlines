@@ -9,17 +9,17 @@ skinparam class {                   ' Opens a configuration block to apply speci
     HeaderBackgroundColor #34495E   ' Sets the background color of the top header section (where the class name sits) to a dark blue-grey.
 }
 
-' Sets the main title that appears at the top of the rendered diagram
+' title: sets the main title that appears at the top of the rendered diagram
 title Airline Data Engineering Platform - Entity Relationship Diagram (ERD)
 
 
-' Defines an entity (table) with the display name and an internal alias
+' entity: defines an entity (table) with the display name and an internal alias
     ' The asterisk (*) denotes a mandatory (NOT NULL) field. 
     ' Double asterisks (**) render the text in bold.
-    ' A double hyphen creates a solid horizontal line to separate primary keys from standard columns
-    ' [PK] indicates the Primary Key, the unique identifier for each record
-    ' [FK] indicates a Foreign Key, which references a primary key in another table
-    ' [UNIQUE] ensures that no two records can share the same value in this column
+    ' A double hyphen creates a solid horizontal line to separate primary keys from standard columns.
+    ' [PK] indicates the Primary Key, the unique identifier for each record.
+    ' [FK] indicates a Foreign Key, which references a primary key in another table.
+    ' [UNIQUE] ensures that no two records can share the same value in this column.
 
 entity "countries" as countries {
     * **country_iso2** : CHAR(2) [PK]
@@ -184,6 +184,7 @@ entity "itinerary_segments" as segments {
 ' Relationships & Foreign Keys
 ' [Syntax] 
 ' EntityA [LeftMarker][LineStyle][RightMarker] EntityB : "relationship description"
+' Example: countries ||--o{ cities : "contains"
 
 ' [Left Markers]
 ' ||: Exactly One (Mandatory)
