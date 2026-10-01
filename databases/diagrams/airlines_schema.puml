@@ -11,13 +11,37 @@ skinparam class {
 
 title Airline Data Engineering Platform - Entity Relationship Diagram (ERD)
 
+entity "countries" as countries {
+    * **country_iso2** : CHAR(2) [PK]
+    --
+    * country_name : VARCHAR(100)
+    country_iso3 : CHAR(3)
+    continent : CHAR(2)
+    currency_code : CHAR(3)
+    capital : VARCHAR(100)
+    population : BIGINT
+}
+
+entity "cities" as cities {
+    * **city_id** : INT [PK]
+    --
+    * city_name : VARCHAR(100)
+    city_iata_code : CHAR(3)
+    country_iso2 : CHAR(2) [FK]
+    latitude : DECIMAL(9,6)
+    longitude : DECIMAL(9,6)
+    timezone : VARCHAR(50)
+}
+
 entity "airports" as airports {
     * **iata_code** : CHAR(3) [PK]
     --
     * icao_code : CHAR(4)
     * name : VARCHAR(150)
-    * city : VARCHAR(100)
-    * country : VARCHAR(100)
+    city_id : INT [FK]
+    country_iso2 : CHAR(2) [FK]
+    city : VARCHAR(100)
+    country : VARCHAR(100)
     latitude : DECIMAL(9,6)
     longitude : DECIMAL(9,6)
     timezone : VARCHAR(50)
@@ -30,6 +54,7 @@ entity "airlines" as airlines {
     * icao_code : CHAR(3)
     * name : VARCHAR(150)
     callsign : VARCHAR(100)
+    country_iso2 : CHAR(2) [FK]
     country : VARCHAR(100)
     is_active : BOOLEAN
 }
@@ -95,7 +120,18 @@ entity "passengers" as passengers {
     * email : VARCHAR(150) [UNIQUE]
     phone : VARCHAR(30)
     passport_number : VARCHAR(50)
-    nationality : CHAR(2)
+    nationality : CHAR(2) [FK]
+    created_at : TIMESTAMP
+}
+
+entity "passenger_documents" as documents {
+    * **document_id** : BIGINT [PK]
+    --
+    * passenger_id : BIGINT [FK]
+    * document_type : VARCHAR(20) // 'passport' | 'national_id'
+    * document_number : VARCHAR(50)
+    * issuing_country : CHAR(2) [FK]
+    expiration_date : DATE
     created_at : TIMESTAMP
 }
 
@@ -104,6 +140,7 @@ entity "bookings" as bookings {
     --
     * booking_reference : VARCHAR(10) [UNIQUE]
     * passenger_id : BIGINT [FK]
+    document_id : BIGINT [FK]
     booking_timestamp : TIMESTAMP
     total_price : DECIMAL(10,2)
     currency : CHAR(3)
@@ -135,6 +172,13 @@ entity "itinerary_segments" as segments {
 }
 
 ' Relationships & Foreign Keys
+countries ||--o{ cities : "contains"
+countries ||--o{ airports : "located in"
+cities ||--o{ airports : "serves"
+
+countries ||--o{ airlines : "based in"
+countries ||--o{ passengers : "citizenship"
+
 airlines ||--o{ airplanes : "operates"
 models ||--o{ airplanes : "specifies"
 
@@ -144,6 +188,10 @@ airports ||--o{ schedules : "destination"
 
 schedules ||--o{ flights : "generates instance"
 airplanes ||--o{ flights : "assigned to"
+
+passengers ||--o{ documents : "holds"
+countries ||--o{ documents : "issued by"
+documents ||--o{ bookings : "presented for"
 
 passengers ||--o{ bookings : "makes"
 bookings ||--o{ itineraries : "contains"
