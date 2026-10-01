@@ -1,205 +1,385 @@
+' Start the PlantUML diagram and assign its internal identifier
 @startuml airline_data_model
+' Apply the plain visual theme to keep the ERD style minimal
 !theme plain
+' Use orthogonal connectors for cleaner right-angled relationship lines
 skinparam linetype ortho
+' Round element corners to soften entity box styling
 skinparam roundcorner 10
+' Open class-style skin parameters that also style entity boxes
 skinparam class {
+' Set entity body background color
     BackgroundColor White
+' Set entity border color
     BorderColor #2C3E50
+' Set relationship line and arrow color
     ArrowColor #2C3E50
+' Set entity header background color
     HeaderBackgroundColor #34495E
+' Close the skin parameter block
 }
 
+' Define the diagram title shown at the top of the ERD
 title Airline Data Engineering Platform - Entity Relationship Diagram (ERD)
 
+' Declare the "countries" entity and its alias for relationships
 entity "countries" as countries {
+    ' Define the country_iso2 field for the countries entity
     * **country_iso2** : CHAR(2) [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the country_name field for the countries entity
     * country_name : VARCHAR(100)
+    ' Define the country_iso3 field for the countries entity
     country_iso3 : CHAR(3)
+    ' Define the continent field for the countries entity
     continent : CHAR(2)
+    ' Define the currency_code field for the countries entity
     currency_code : CHAR(3)
+    ' Define the capital field for the countries entity
     capital : VARCHAR(100)
+    ' Define the population field for the countries entity
     population : BIGINT
+' Close the "countries" entity definition
 }
 
+' Declare the "cities" entity and its alias for relationships
 entity "cities" as cities {
+    ' Define the city_id field for the cities entity
     * **city_id** : INT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the city_name field for the cities entity
     * city_name : VARCHAR(100)
+    ' Define the city_iata_code field for the cities entity
     city_iata_code : CHAR(3)
+    ' Define the country_iso2 field for the cities entity
     country_iso2 : CHAR(2) [FK]
+    ' Define the latitude field for the cities entity
     latitude : DECIMAL(9,6)
+    ' Define the longitude field for the cities entity
     longitude : DECIMAL(9,6)
+    ' Define the timezone field for the cities entity
     timezone : VARCHAR(50)
+' Close the "cities" entity definition
 }
 
+' Declare the "airports" entity and its alias for relationships
 entity "airports" as airports {
+    ' Define the iata_code field for the airports entity
     * **iata_code** : CHAR(3) [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the icao_code field for the airports entity
     * icao_code : CHAR(4)
+    ' Define the name field for the airports entity
     * name : VARCHAR(150)
+    ' Define the city_id field for the airports entity
     city_id : INT [FK]
+    ' Define the country_iso2 field for the airports entity
     country_iso2 : CHAR(2) [FK]
+    ' Define the city field for the airports entity
     city : VARCHAR(100)
+    ' Define the country field for the airports entity
     country : VARCHAR(100)
+    ' Define the latitude field for the airports entity
     latitude : DECIMAL(9,6)
+    ' Define the longitude field for the airports entity
     longitude : DECIMAL(9,6)
+    ' Define the timezone field for the airports entity
     timezone : VARCHAR(50)
+' Close the "airports" entity definition
 }
 
+' Declare the "airlines" entity and its alias for relationships
 entity "airlines" as airlines {
+    ' Define the airline_id field for the airlines entity
     * **airline_id** : INT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the iata_code field for the airlines entity
     * iata_code : CHAR(2) [UNIQUE]
+    ' Define the icao_code field for the airlines entity
     * icao_code : CHAR(3)
+    ' Define the name field for the airlines entity
     * name : VARCHAR(150)
+    ' Define the callsign field for the airlines entity
     callsign : VARCHAR(100)
+    ' Define the country_iso2 field for the airlines entity
     country_iso2 : CHAR(2) [FK]
+    ' Define the country field for the airlines entity
     country : VARCHAR(100)
+    ' Define the is_active field for the airlines entity
     is_active : BOOLEAN
+' Close the "airlines" entity definition
 }
 
+' Declare the "airplane_models" entity and its alias for relationships
 entity "airplane_models" as models {
+    ' Define the model_id field for the airplane_models entity
     * **model_id** : INT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the model_code field for the airplane_models entity
     * model_code : VARCHAR(50) [UNIQUE]
+    ' Define the manufacturer field for the airplane_models entity
     * manufacturer : VARCHAR(100)
+    ' Define the seat_capacity field for the airplane_models entity
     seat_capacity : INT
+    ' Define the range_km field for the airplane_models entity
     range_km : INT
+    ' Define the cruising_speed_kmh field for the airplane_models entity
     cruising_speed_kmh : INT
+' Close the "airplane_models" entity definition
 }
 
+' Declare the "airplanes" entity and its alias for relationships
 entity "airplanes" as airplanes {
+    ' Define the airplane_id field for the airplanes entity
     * **airplane_id** : INT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the tail_number field for the airplanes entity
     * tail_number : VARCHAR(20) [UNIQUE]
+    ' Define the airline_id field for the airplanes entity
     * airline_id : INT [FK]
+    ' Define the model_id field for the airplanes entity
     * model_id : INT [FK]
+    ' Define the manufacture_year field for the airplanes entity
     manufacture_year : INT
+    ' Define the status field for the airplanes entity
     status : VARCHAR(30)
+' Close the "airplanes" entity definition
 }
 
+' Declare the "flight_schedules" entity and its alias for relationships
 entity "flight_schedules" as schedules {
+    ' Define the schedule_id field for the flight_schedules entity
     * **schedule_id** : INT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the flight_number field for the flight_schedules entity
     * flight_number : VARCHAR(10)
+    ' Define the airline_id field for the flight_schedules entity
     * airline_id : INT [FK]
+    ' Define the origin_iata field for the flight_schedules entity
     * origin_iata : CHAR(3) [FK]
+    ' Define the destination_iata field for the flight_schedules entity
     * destination_iata : CHAR(3) [FK]
+    ' Define the scheduled_departure_time field for the flight_schedules entity
     scheduled_departure_time : TIME
+    ' Define the scheduled_arrival_time field for the flight_schedules entity
     scheduled_arrival_time : TIME
+    ' Define the days_of_week field for the flight_schedules entity
     days_of_week : VARCHAR(7)
+    ' Define the distance_km field for the flight_schedules entity
     distance_km : INT
+' Close the "flight_schedules" entity definition
 }
 
+' Declare the "flights" entity and its alias for relationships
 entity "flights" as flights {
+    ' Define the flight_id field for the flights entity
     * **flight_id** : BIGINT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the schedule_id field for the flights entity
     * schedule_id : INT [FK]
+    ' Define the flight_date field for the flights entity
     * flight_date : DATE
+    ' Define the flight_number field for the flights entity
     flight_number : VARCHAR(10)
+    ' Define the airplane_id field for the flights entity
     airplane_id : INT [FK]
+    ' Define the scheduled_departure field for the flights entity
     scheduled_departure : TIMESTAMP
+    ' Define the actual_departure field for the flights entity
     actual_departure : TIMESTAMP
+    ' Define the scheduled_arrival field for the flights entity
     scheduled_arrival : TIMESTAMP
+    ' Define the actual_arrival field for the flights entity
     actual_arrival : TIMESTAMP
+    ' Define the departure_delay_min field for the flights entity
     departure_delay_min : INT
+    ' Define the arrival_delay_min field for the flights entity
     arrival_delay_min : INT
+    ' Define the status field for the flights entity
     status : VARCHAR(30)
+    ' Define the terminal_dep field for the flights entity
     terminal_dep : VARCHAR(10)
+    ' Define the gate_dep field for the flights entity
     gate_dep : VARCHAR(10)
+    ' Define the terminal_arr field for the flights entity
     terminal_arr : VARCHAR(10)
+    ' Define the gate_arr field for the flights entity
     gate_arr : VARCHAR(10)
+' Close the "flights" entity definition
 }
 
+' Declare the "passengers" entity and its alias for relationships
 entity "passengers" as passengers {
+    ' Define the passenger_id field for the passengers entity
     * **passenger_id** : BIGINT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the first_name field for the passengers entity
     * first_name : VARCHAR(100)
+    ' Define the last_name field for the passengers entity
     * last_name : VARCHAR(100)
+    ' Define the email field for the passengers entity
     * email : VARCHAR(150) [UNIQUE]
+    ' Define the phone field for the passengers entity
     phone : VARCHAR(30)
+    ' Define the passport_number field for the passengers entity
     passport_number : VARCHAR(50)
+    ' Define the nationality field for the passengers entity
     nationality : CHAR(2) [FK]
+    ' Define the created_at field for the passengers entity
     created_at : TIMESTAMP
+' Close the "passengers" entity definition
 }
 
+' Declare the "passenger_documents" entity and its alias for relationships
 entity "passenger_documents" as documents {
+    ' Define the document_id field for the passenger_documents entity
     * **document_id** : BIGINT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the passenger_id field for the passenger_documents entity
     * passenger_id : BIGINT [FK]
+    ' Define the document_type field for the passenger_documents entity
     * document_type : VARCHAR(20) // 'passport' | 'national_id'
+    ' Define the document_number field for the passenger_documents entity
     * document_number : VARCHAR(50)
+    ' Define the issuing_country field for the passenger_documents entity
     * issuing_country : CHAR(2) [FK]
+    ' Define the expiration_date field for the passenger_documents entity
     expiration_date : DATE
+    ' Define the created_at field for the passenger_documents entity
     created_at : TIMESTAMP
+' Close the "passenger_documents" entity definition
 }
 
+' Declare the "bookings" entity and its alias for relationships
 entity "bookings" as bookings {
+    ' Define the booking_id field for the bookings entity
     * **booking_id** : BIGINT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the booking_reference field for the bookings entity
     * booking_reference : VARCHAR(10) [UNIQUE]
+    ' Define the passenger_id field for the bookings entity
     * passenger_id : BIGINT [FK]
+    ' Define the document_id field for the bookings entity
     document_id : BIGINT [FK]
+    ' Define the booking_timestamp field for the bookings entity
     booking_timestamp : TIMESTAMP
+    ' Define the total_price field for the bookings entity
     total_price : DECIMAL(10,2)
+    ' Define the currency field for the bookings entity
     currency : CHAR(3)
+    ' Define the status field for the bookings entity
     status : VARCHAR(30)
+' Close the "bookings" entity definition
 }
 
+' Declare the "itineraries" entity and its alias for relationships
 entity "itineraries" as itineraries {
+    ' Define the itinerary_id field for the itineraries entity
     * **itinerary_id** : BIGINT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the booking_id field for the itineraries entity
     * booking_id : BIGINT [FK]
+    ' Define the origin_iata field for the itineraries entity
     * origin_iata : CHAR(3) [FK]
+    ' Define the destination_iata field for the itineraries entity
     * destination_iata : CHAR(3) [FK]
+    ' Define the itinerary_type field for the itineraries entity
     itinerary_type : VARCHAR(30) // 'direct' | 'connecting_stopover'
+    ' Define the total_stops field for the itineraries entity
     total_stops : INT // 0 for direct, 1+ for stopover
+    ' Define the total_duration_minutes field for the itineraries entity
     total_duration_minutes : INT
+    ' Define the total_layover_minutes field for the itineraries entity
     total_layover_minutes : INT
+' Close the "itineraries" entity definition
 }
 
+' Declare the "itinerary_segments" entity and its alias for relationships
 entity "itinerary_segments" as segments {
+    ' Define the segment_id field for the itinerary_segments entity
     * **segment_id** : BIGINT [PK]
+    ' Separate key fields from non-key attributes in the entity
     --
+    ' Define the itinerary_id field for the itinerary_segments entity
     * itinerary_id : BIGINT [FK]
+    ' Define the segment_sequence field for the itinerary_segments entity
     * segment_sequence : INT // 1, 2, 3...
+    ' Define the flight_id field for the itinerary_segments entity
     * flight_id : BIGINT [FK]
+    ' Define the seat_number field for the itinerary_segments entity
     seat_number : VARCHAR(10)
+    ' Define the cabin_class field for the itinerary_segments entity
     cabin_class : VARCHAR(20) // 'economy', 'business', 'first'
+    ' Define the layover_duration_minutes field for the itinerary_segments entity
     layover_duration_minutes : INT
+    ' Define the boarding_pass_code field for the itinerary_segments entity
     boarding_pass_code : VARCHAR(100)
+' Close the "itinerary_segments" entity definition
 }
 
 ' Relationships & Foreign Keys
+' Define contains relationship from countries to cities
 countries ||--o{ cities : "contains"
+' Define located in relationship from countries to airports
 countries ||--o{ airports : "located in"
+' Define serves relationship from cities to airports
 cities ||--o{ airports : "serves"
 
+' Define based in relationship from countries to airlines
 countries ||--o{ airlines : "based in"
+' Define citizenship relationship from countries to passengers
 countries ||--o{ passengers : "citizenship"
 
+' Define operates relationship from airlines to airplanes
 airlines ||--o{ airplanes : "operates"
+' Define specifies relationship from models to airplanes
 models ||--o{ airplanes : "specifies"
 
+' Define publishes relationship from airlines to schedules
 airlines ||--o{ schedules : "publishes"
+' Define origin relationship from airports to schedules
 airports ||--o{ schedules : "origin"
+' Define destination relationship from airports to schedules
 airports ||--o{ schedules : "destination"
 
+' Define generates instance relationship from schedules to flights
 schedules ||--o{ flights : "generates instance"
+' Define assigned to relationship from airplanes to flights
 airplanes ||--o{ flights : "assigned to"
 
+' Define holds relationship from passengers to documents
 passengers ||--o{ documents : "holds"
+' Define issued by relationship from countries to documents
 countries ||--o{ documents : "issued by"
+' Define presented for relationship from documents to bookings
 documents ||--o{ bookings : "presented for"
 
+' Define makes relationship from passengers to bookings
 passengers ||--o{ bookings : "makes"
+' Define contains relationship from bookings to itineraries
 bookings ||--o{ itineraries : "contains"
 
+' Define journey origin relationship from airports to itineraries
 airports ||--o{ itineraries : "journey origin"
+' Define journey destination relationship from airports to itineraries
 airports ||--o{ itineraries : "journey destination"
 
+' Define composed of relationship from itineraries to segments
 itineraries ||--|{ segments : "composed of"
+' Define fulfills leg relationship from flights to segments
 flights ||--o{ segments : "fulfills leg"
 
+' End the PlantUML diagram definition
 @enduml
