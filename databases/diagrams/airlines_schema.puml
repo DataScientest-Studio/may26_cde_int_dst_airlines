@@ -1,12 +1,12 @@
-@startuml airline_data_model        ' Initializes the UML diagram and assigns the internal name airline_data_model
-!theme plain                        ' Applies a minimal, flat base theme to the diagram, removing default shadows and gradients.
-skinparam linetype ortho            ' Forces relationship lines to route using right angles (orthogonal) rather than direct diagonal paths.
-skinparam roundcorner 10            ' Applies a 10-pixel rounding radius to the corners of the diagram elements (like class boxes).
-skinparam class {                   ' Opens a configuration block to apply specific styling rules to all class entities in the diagram.
-    BackgroundColor White           ' Sets the interior fill color of the main body of the class boxes to white.
-    BorderColor #2C3E50             ' Sets the outer border color of the class boxes to a dark slate blue.
-    ArrowColor #2C3E50              ' Sets the color of the relationship lines and arrows connecting the classes to a dark slate blue.
-    HeaderBackgroundColor #34495E   ' Sets the background color of the top header section (where the class name sits) to a dark blue-grey.
+@startuml airline_data_model
+!theme plain      
+skinparam linetype ortho         
+skinparam roundcorner 10        
+skinparam class {                
+    BackgroundColor White         
+    BorderColor #2C3E50        
+    ArrowColor #2C3E50             
+    HeaderBackgroundColor #34495E   
 }
 
 ' title: sets the main title that appears at the top of the rendered diagram
