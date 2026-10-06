@@ -16,6 +16,8 @@ Two kinds of informations ca be requested
 
 - Kind of master data like airports, airlines, airplanes etc.
 
+The master data tables need to be read only once and can be filled only in the first 14 days of the free plan. Then the access is restricted and only the flights API is usable.
+
 ## Example of flights data
 
 The data is collected via https://api.aviationstack.com/v1/flights GET request.
@@ -84,7 +86,7 @@ The data is collected via https://api.aviationstack.com/v1/flights GET request.
 }
 ```
 
-The data was shortenend to one record, you get 100 records per call ob the free plan.
+The data was shortenend to one record, you get 100 records per call on the free plan. You have 100 calls per month on this plan.
 
 As can be seen, every flights record is separted in several objects:
 
@@ -100,7 +102,11 @@ As can be seen, every flights record is separted in several objects:
 
 - general information like flight date, status, and live. In the live object there was never seen anything else then null.
 
-## Example of airports data
+## Masterdata
+
+This data is retrieved once during the project at the beginning. Aviationsstack restricts access after 14 days!
+
+### Example of airports data
 
 The airports data is a list of all airports in the following format
 
@@ -137,7 +143,7 @@ Again the data was shortend to one record.
 
 The airport data can be matched with the flights data by the IATA code in arrival/departure.
 
-## Example of airlines data
+### Example of airlines data
 
 ```
 {
@@ -173,7 +179,7 @@ Again the data was shortend to one record.
 
 The airline data can be matched with the flights data by the IATA code in airline.
 
-## Example of airplane data
+### Example of airplane data
 
 ```
 {
@@ -218,7 +224,7 @@ The airline data can be matched with the flights data by the IATA code in airlin
 
 Here the ICAO24 seems to match with the ICAO code hex from the airlines data. The fields of IATA code as mostly empty in the example flights data.
 
-## Aircraft types
+### Aircraft types
 
 ```
 {
@@ -241,7 +247,7 @@ Here the ICAO24 seems to match with the ICAO code hex from the airlines data. Th
 
 Here the IATA code seems to match with the IATA code short of the airplane data.
 
-## Taxes
+### Taxes
 
 ```
 {
@@ -276,7 +282,7 @@ Here the IATA code seems to match with the IATA code short of the airplane data.
 
 This is a list of taxes probably per city/airport - looks not so relevant.
 
-## Cities data
+### Cities data
 
 ```
 {
@@ -305,7 +311,7 @@ This is a list of taxes probably per city/airport - looks not so relevant.
 
 This data can be matched by the city IATA code from the airports data.
 
-## Countries data
+### Countries data
 
 ```
 {
@@ -334,3 +340,19 @@ This data can be matched by the city IATA code from the airports data.
 ```
 
 This data can be matched to airports data by country ISO 2 code.
+
+## Database scheme
+
+The database scheme was created with the web based editor [PlantUML](https://plantuml.com/de/).
+
+![Database model](./figures/database_model.png)
+
+This is the complete model for all data that could be retrieved via aviationstack. We will concentrate on the following tables
+
+- flights - the flights data retrieved daily 3 times a day
+
+- airports - retrieved once at the beginning
+
+- airlines - retrieved once at the beginning
+
+The other masterdata cannot be retrieved with the free plan of aviationstack.
