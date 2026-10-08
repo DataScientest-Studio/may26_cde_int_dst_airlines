@@ -8,5 +8,5 @@ pymongo==4.18.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.3
 six==1.17.0
-swagger-client @ file:///home/michael/github/may26_cde_int_dst_airlines/aviationstack/api-client
+swagger-client @ file:///exchange/Liora/GIT/may26_cde_int_dst_airlines/aviationstack/api-client
 urllib3==2.8.0

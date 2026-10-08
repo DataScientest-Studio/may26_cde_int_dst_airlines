@@ -5,7 +5,14 @@ info:
 
 http:
   method: GET
-  url: https://api.aviationstack.com/v1/airports
+  url: http://127.0.0.1:1080/v1/airports?offset=0&limit=100
+  params:
+    - name: offset
+      value: "0"
+      type: query
+    - name: limit
+      value: "100"
+      type: query
   auth: inherit
 
 settings:
