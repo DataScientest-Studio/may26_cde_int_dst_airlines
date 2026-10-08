@@ -46,7 +46,8 @@ class Configuration(six.with_metaclass(TypeWithDefault, object)):
     def __init__(self):
         """Constructor"""
         # Default Base url
-        self.host = "https://api.aviationstack.com"
+        #self.host = "https://api.aviationstack.com"
+        self.host = "http://localhost:1080"
         # Temp file folder for downloading files
         self.temp_folder_path = None
 
