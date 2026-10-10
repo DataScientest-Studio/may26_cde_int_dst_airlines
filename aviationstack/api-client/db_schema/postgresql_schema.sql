@@ -27,14 +27,14 @@
 -- DROP TABLE IF EXISTS country_data;
 -- DROP TABLE IF EXISTS data_aircraft;
 -- DROP TABLE IF EXISTS data_airline;
+-- DROP TABLE IF EXISTS data_arrival;
 -- DROP TABLE IF EXISTS data_departure;
 -- DROP TABLE IF EXISTS data_flight;
 -- DROP TABLE IF EXISTS data_flight2;
 -- DROP TABLE IF EXISTS data_flight2_codeshared;
 -- DROP TABLE IF EXISTS data_routes;
 -- DROP TABLE IF EXISTS data_routes_flight;
--- DROP TABLE IF EXISTS datalive;
--- DROP TABLE IF EXISTS flights;
+-- DROP TABLE IF EXISTS data_live;
 -- DROP TABLE IF EXISTS flights_future;
 -- DROP TABLE IF EXISTS future_flight_aircraft;
 -- DROP TABLE IF EXISTS future_flight_airline;
@@ -241,12 +241,11 @@ COMMENT ON TABLE data_aircraft IS 'Original model name - DataAircraft.';
 -- Table 'data_airline' generated from model 'DataAirline'
 --
 CREATE TABLE IF NOT EXISTS data_airline (
-    id BIGSERIAL,
     flight_id BIGINT,
     "name" TEXT DEFAULT NULL,
     iata TEXT DEFAULT NULL,
     icao TEXT DEFAULT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (flight_id)
 );
 COMMENT ON TABLE data_airline IS 'Original model name - DataAirline.';
 
@@ -254,7 +253,6 @@ COMMENT ON TABLE data_airline IS 'Original model name - DataAirline.';
 -- Table 'data_departure' generated from model 'DataDeparture'
 --
 CREATE TABLE IF NOT EXISTS data_departure (
-    id BIGSERIAL,
     flight_id BIGINT,
     airport TEXT DEFAULT NULL,
     timezone TEXT DEFAULT NULL,
@@ -269,21 +267,43 @@ CREATE TABLE IF NOT EXISTS data_departure (
     estimated_runway TEXT DEFAULT NULL,
     actual_runway TEXT DEFAULT NULL,
     baggage TEXT DEFAULT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (flight_id)
 );
 COMMENT ON TABLE data_departure IS 'Original model name - DataDeparture.';
+
+--
+-- Table 'data_arrival' generated from model 'DataArrival'
+--
+CREATE TABLE IF NOT EXISTS data_arrival (
+    flight_id BIGINT,
+    airport TEXT DEFAULT NULL,
+    timezone TEXT DEFAULT NULL,
+    iata TEXT DEFAULT NULL,
+    icao TEXT DEFAULT NULL,
+    terminal TEXT DEFAULT NULL,
+    gate TEXT DEFAULT NULL,
+    delay INTEGER DEFAULT NULL,
+    scheduled TEXT DEFAULT NULL,
+    estimated TEXT DEFAULT NULL,
+    actual TEXT DEFAULT NULL,
+    estimated_runway TEXT DEFAULT NULL,
+    actual_runway TEXT DEFAULT NULL,
+    baggage TEXT DEFAULT NULL,
+    PRIMARY KEY (flight_id)
+);
+COMMENT ON TABLE data_arrival IS 'Original model name - DataDeparture.';
+
 
 --
 -- Table 'data_flight2' generated from model 'DataFlight2'
 --
 CREATE TABLE IF NOT EXISTS data_flight2 (
-    id BIGSERIAL,
     flight_id BIGINT,
     "number" TEXT DEFAULT NULL,
     iata TEXT DEFAULT NULL,
     icao TEXT DEFAULT NULL,
-    codeshared TEXT DEFAULT NULL,
-    PRIMARY KEY (id)
+    is_codeshared BOOLEAN DEFAULT false,
+    PRIMARY KEY (flight_id)
 );
 COMMENT ON TABLE data_flight2 IS 'Original model name - DataFlight2.';
 
@@ -311,12 +331,14 @@ COMMENT ON TABLE data_live IS 'Original model name - Datalive.';
 -- Table 'data_flight2_codeshared' generated from model 'DataFlight2Underscorecodeshared'
 --
 CREATE TABLE IF NOT EXISTS data_flight2_codeshared (
+    flight_id BIGINT,
     airline_name TEXT DEFAULT NULL,
     airline_iata TEXT DEFAULT NULL,
     airline_icao TEXT DEFAULT NULL,
     flight_number TEXT DEFAULT NULL,
     flight_iata TEXT DEFAULT NULL,
-    flight_icao TEXT DEFAULT NULL
+    flight_icao TEXT DEFAULT NULL,
+    PRIMARY KEY (flight_id)
 );
 COMMENT ON TABLE data_flight2_codeshared IS 'Original model name - DataFlight2_codeshared.';
 
