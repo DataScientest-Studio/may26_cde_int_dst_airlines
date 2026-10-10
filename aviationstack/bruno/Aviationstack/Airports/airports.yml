@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:1080/v1/airports?offset=0&limit=100
+  url: https://api.aviationstack.com/v1/airports?offset=0&limit=100
   params:
     - name: offset
       value: "0"
