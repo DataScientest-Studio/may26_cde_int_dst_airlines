@@ -1,0 +1,71 @@
+import csv
+import string
+from bs4 import BeautifulSoup
+import requests
+
+
+def scrape_all_iata_codes():
+  all_airports = []
+
+  # Wikipedia requires a descriptive User-Agent
+  headers = {
+      "User-Agent": (
+          "FlightDataApp/1.0"
+          " (https://github.com/example/flight-app; contact@example.com)"
+      )
+  }
+
+  # Loop through all alphabet letters from A to Z
+  for letter in string.ascii_uppercase:
+    url = f"https://en.wikipedia.org/wiki/List_of_airports_by_IATA_code:_{letter}"
+    print(f"Scraping airports for letter: {letter}...")
+
+    try:
+      response = requests.get(url, headers=headers)
+      if response.status_code != 200:
+        print(f"Skipping {letter}, page returned status {response.status_code}")
+        continue
+
+      soup = BeautifulSoup(response.text, "html.parser")
+      tables = soup.find_all("table", class_="wikitable")
+
+      count_for_letter = 0
+      for table in tables:
+        rows = table.find_all("tr")
+        for row in rows[1:]:  # Skip header row
+          cols = row.find_all(["th", "td"])
+          if len(cols) >= 3:
+            iata_cell = cols[0].get_text(strip=True)
+            airport_cell = cols[2].get_text(strip=True)
+            location_cell = cols[3].get_text(strip=True) if len(cols) > 3 else ""
+
+            # Validate that it looks like a valid 3-letter uppercase IATA code
+            if len(iata_cell) == 3 and iata_cell.isalpha():
+              all_airports.append({
+                  "IATA": iata_cell.upper(),
+                  "Airport": airport_cell,
+                  "Location": location_cell,
+              })
+              count_for_letter += 1
+
+      print(f"Found {count_for_letter} airports for {letter}")
+
+    except Exception as e:
+      print(f"Error scraping letter {letter}: {e}")
+
+  # Export all collected data to a single CSV file
+  csv_filename = "all_iata_codes.csv"
+  with open(csv_filename, mode="w", newline="", encoding="utf-8") as f:
+    writer = csv.DictWriter(f, fieldnames=["IATA", "Airport", "Location"])
+    writer.writeheader()
+    for item in all_airports:
+      writer.writerow(item)
+
+  print(
+      f"\nSuccessfully completed! Scraped a total of {len(all_airports)}"
+      f" airports and saved to {csv_filename}."
+  )
+
+
+if __name__ == "__main__":
+  scrape_all_iata_codes()
