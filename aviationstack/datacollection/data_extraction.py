@@ -179,11 +179,204 @@ def map_airline_data(source_airline):
         "icao_code": source_airline.get("icao"),
     }
 
+def collect_flights(flights_collection, pg_conn):
+    """
+    Extract flights from the flights collection and store them in PostgreSQL.
+    """
+    print("Extracting flights from MongoDB...")
+    flights = flights_collection.find({}, {"_id": 0})  # Exclude the MongoDB _id field
+    flight_data_list = []
+    
+    for flight in flights:
+        flight_data = map_flight_data(flight)
+        flight_data_list.append(flight_data)
 
+    print(f"Found {len(flight_data_list)} flights. Inserting into PostgreSQL...")
+
+    commit_counter = 0
+    for flight_data in flight_data_list:
+        with pg_conn.cursor() as cursor:
+            cursor.execute(
+                """
+                INSERT INTO public.data_flight (
+                    flight_date, flight_status
+                ) VALUES (
+                    %s, %s
+                )
+                RETURNING id;
+                """,
+                (
+                    flight_data["data_flight"]["flight_date"],
+                    flight_data["data_flight"]["flight_status"]
+                )
+            )
+            flight_id = cursor.fetchone()[0]
+            
+            cursor.execute(
+                """
+                INSERT INTO public.data_departure 
+                    (flight_id, airport, timezone, iata, icao, terminal, gate, delay, scheduled, estimated, actual, estimated_runway, actual_runway, baggage)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);
+                """,
+                (flight_id,
+                    flight_data["data_departure"]["airport"],
+                    flight_data["data_departure"]["timezone"],
+                    flight_data["data_departure"]["iata"],
+                    flight_data["data_departure"]["icao"],
+                    flight_data["data_departure"]["terminal"],
+                    flight_data["data_departure"]["gate"],
+                    flight_data["data_departure"]["delay"],
+                    flight_data["data_departure"]["scheduled"],
+                    flight_data["data_departure"]["estimated"],
+                    flight_data["data_departure"]["actual"],
+                    flight_data["data_departure"]["estimated_runway"],
+                    flight_data["data_departure"]["actual_runway"],
+                    flight_data["data_departure"]["baggage"]
+                )
+            )
+                
+            cursor.execute(
+                """
+                INSERT INTO public.data_arrival
+                    (flight_id, airport, timezone, iata, icao, terminal, gate, delay, scheduled, estimated, actual, estimated_runway, actual_runway, baggage)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);
+                """,
+                (flight_id,
+                    flight_data["data_arrival"]["airport"],
+                    flight_data["data_arrival"]["timezone"],
+                    flight_data["data_arrival"]["iata"],
+                    flight_data["data_arrival"]["icao"],
+                    flight_data["data_arrival"]["terminal"],
+                    flight_data["data_arrival"]["gate"],
+                    flight_data["data_arrival"]["delay"],
+                    flight_data["data_arrival"]["scheduled"],
+                    flight_data["data_arrival"]["estimated"],
+                    flight_data["data_arrival"]["actual"],
+                    flight_data["data_arrival"]["estimated_runway"],
+                    flight_data["data_arrival"]["actual_runway"],
+                    flight_data["data_arrival"]["baggage"]
+                )
+            )                
+            
+            cursor.execute(
+                """
+                INSERT INTO public.data_airline
+                    (flight_id, name, iata, icao)
+                VALUES (%s,%s,%s,%s);
+                """,
+                (flight_id,
+                    flight_data["data_airline"]["name"],
+                    flight_data["data_airline"]["iata"],
+                    flight_data["data_airline"]["icao"]
+                )
+            )
+            
+            cursor.execute(
+                """
+                INSERT INTO public.data_flight2
+                    (flight_id, number, iata, icao, is_codeshared)
+                VALUES (%s,%s,%s,%s,%s);
+                """,
+                (flight_id,
+                    flight_data["data_flight2"]["number"],
+                    flight_data["data_flight2"]["iata"],
+                    flight_data["data_flight2"]["icao"],
+                    flight_data["data_flight2"]["codeshared"]
+                )
+            )
+            
+            if flight_data.get("data_flight2").get("codeshared"):
+                cursor.execute(
+                    """
+                    INSERT INTO public.data_flight2_codeshared
+                        (flight_id, airline_name, airline_iata, airline_icao, flight_number, flight_iata, flight_icao)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s);
+                    """,
+                    (flight_id,
+                        flight_data["data_flight2_codeshared"]["airline_name"],
+                        flight_data["data_flight2_codeshared"]["airline_iata"],
+                        flight_data["data_flight2_codeshared"]["airline_icao"],
+                        flight_data["data_flight2_codeshared"]["flight_number"],
+                        flight_data["data_flight2_codeshared"]["flight_iata"],
+                        flight_data["data_flight2_codeshared"]["flight_icao"]
+                    )
+                )
+            
+            
+            
+
+            
+            pg_conn.commit()
+            commit_counter += 1
+    print("{} Flights inserted into PostgreSQL.".format(commit_counter))
+
+def map_flight_data(source_flight):
+    """
+    Map the source flight data from MongoDB to the PostgreSQL schema.
+    """
+    result = {"data_flight":{
+            "flight_date": source_flight.get("flight_date"),
+            "flight_status": source_flight.get("flight_status")
+        },
+        "data_departure": {
+            "airport": source_flight.get("departure", {}).get("airport"),
+            "timezone": source_flight.get("departure", {}).get("timezone"),
+            "iata": source_flight.get("departure", {}).get("iata"),
+            "icao": source_flight.get("departure", {}).get("icao"),
+            "terminal": source_flight.get("departure", {}).get("terminal"),
+            "gate": source_flight.get("departure", {}).get("gate"),
+            "delay": source_flight.get("departure", {}).get("delay"),
+            "scheduled": source_flight.get("departure", {}).get("scheduled"),
+            "estimated": source_flight.get("departure", {}).get("estimated"),
+            "actual": source_flight.get("departure", {}).get("actual"),
+            "estimated_runway": source_flight.get("departure", {}).get("estimated_runway"),
+            "actual_runway": source_flight.get("departure", {}).get("actual_runway"),
+            "baggage": source_flight.get("departure", {}).get("baggage"),
+            },
+        "data_arrival": {
+            "airport": source_flight.get("arrival", {}).get("airport"),
+            "timezone": source_flight.get("arrival", {}).get("timezone"),
+            "iata": source_flight.get("arrival", {}).get("iata"),
+            "icao": source_flight.get("arrival", {}).get("icao"),
+            "terminal": source_flight.get("arrival", {}).get("terminal"),
+            "gate": source_flight.get("arrival", {}).get("gate"),
+            "delay": source_flight.get("arrival", {}).get("delay"),
+            "scheduled": source_flight.get("arrival", {}).get("scheduled"),
+            "estimated": source_flight.get("arrival", {}).get("estimated"),
+            "actual": source_flight.get("arrival", {}).get("actual"),
+            "estimated_runway": source_flight.get("arrival", {}).get("estimated_runway"),
+            "actual_runway": source_flight.get("arrival", {}).get("actual_runway"),
+            "baggage": source_flight.get("arrival", {}).get("baggage"),
+            },
+        "data_airline": {
+            "name": source_flight.get("airline", {}).get("name"),
+            "iata": source_flight.get("airline", {}).get("iata"),
+            "icao": source_flight.get("airline", {}).get("icao"),
+        },
+        "data_flight2": {
+            "number": source_flight.get("flight", {}).get("number"),
+            "iata": source_flight.get("flight", {}).get("iata"),
+            "icao": source_flight.get("flight", {}).get("icao"),
+            "codeshared": source_flight.get("flight", {}).get("codeshared") is not None,
+        },
+    }
+    
+    if source_flight.get("flight", {}).get("codeshared"):
+        result["data_flight2_codeshared"] = {
+            "airline_name": source_flight.get("flight", {}).get("codeshared", {}).get("airline_name"),
+            "airline_iata": source_flight.get("flight", {}).get("codeshared", {}).get("airline_iata"),
+            "airline_icao": source_flight.get("flight", {}).get("codeshared", {}).get("airline_icao"),
+            "flight_number": source_flight.get("flight", {}).get("codeshared", {}).get("flight_number"),
+            "flight_iata": source_flight.get("flight", {}).get("codeshared", {}).get("flight_iata"),
+            "flight_icao": source_flight.get("flight", {}).get("codeshared", {}).get("flight_icao")
+        }
+   
+    return result
 
 mng_client, flights_collection = connect_to_mongodb()
 pg_conn = connect_to_postgresql()
 
 collect_airports(flights_collection, pg_conn)
 collect_airlines(flights_collection, pg_conn)
+collect_flights(flights_collection, pg_conn)
 
