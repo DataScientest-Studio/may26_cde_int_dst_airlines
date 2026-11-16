@@ -168,7 +168,7 @@ def fill_mongodb_with_flight_data():
     """
     Function to fill MongoDB with flight data from AviationStack API.
     """
-    for offset in range(0, 500, limit):  # Adjust the range as needed for more data
+    for offset in range(0, 1000, limit):  # Adjust the range as needed for more data
         print(f"\nFetching data with offset: {offset}")
         get_flight_data(limit=limit, offset=offset)
     client.close()
