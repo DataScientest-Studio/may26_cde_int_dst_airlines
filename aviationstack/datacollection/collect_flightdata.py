@@ -1,3 +1,21 @@
+"""_Script Summary_
+
+This script is intended for retrieving flight data
+from the AviationStack API.
+Access to the API is enabled by providing an access key
+on the environment file. Only API features avaliable for
+free access to aviatiostack are used - all further options are 
+deactivated.
+
+The data received is added to a mongodb "as is" - only format 
+is converted to form a JSON document for string in mongodb.
+
+MongoDB access configuration has to be provided in the environment
+file.
+
+@author: Michael Gulitz
+"""
+
 from __future__ import print_function
 import os
 import swagger_client
@@ -23,6 +41,7 @@ from dotenv import load_dotenv
     file.
     
 """
+
 
 # Load environment variables from .env file
 load_dotenv()
