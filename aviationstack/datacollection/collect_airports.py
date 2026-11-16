@@ -3,7 +3,7 @@ import os
 import swagger_client
 from swagger_client.rest import ApiException
 from pprint import pprint
-import psycopg
+import psycopg2
 import pandas as pd
 from datetime import datetime
 from dotenv import load_dotenv
@@ -16,7 +16,7 @@ def connect_to_postgresql():
     Returns Psycopg2 connection object.
     """
     print(f"Connecting to PostgreSQL at {PGSQL_HOST}:{PGSQL_PORT}/{PGSQL_DATABASE}...")
-    conn = psycopg.connect(
+    conn = psycopg2.connect(
         host=PGSQL_HOST,
         port=PGSQL_PORT,
         dbname=PGSQL_DATABASE,
