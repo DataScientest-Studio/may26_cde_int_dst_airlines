@@ -7,6 +7,22 @@ import pymongo as pm
 from datetime import datetime
 from dotenv import load_dotenv
 
+"""_Script Summary_
+
+    This script is intended for retrieving flight data
+    from the AviationStack API.
+    Access to the API is enabled by providing an access key
+    on the environment file. Only API features avaliable for
+    free access to aviatiostack are used - all further options are 
+    deactivated.
+    
+    The data received is added to a mongodb "as is" - only format 
+    is converted to form a JSON document for string in mongodb.
+    
+    MongoDB access configuration has to be provided in the environment
+    file.
+    
+"""
 
 # Load environment variables from .env file
 load_dotenv()
@@ -166,7 +182,7 @@ def get_flight_data(limit=100, offset=0, access_key=AVIATIONSTACK_API_KEY):
 
 def fill_mongodb_with_flight_data():
     """
-    Function to fill MongoDB with flight data from AviationStack API.
+    Function to call the Aviationstack API call multiple times.
     """
     for offset in range(0, 1000, limit):  # Adjust the range as needed for more data
         print(f"\nFetching data with offset: {offset}")
@@ -174,5 +190,6 @@ def fill_mongodb_with_flight_data():
     client.close()
     print("MongoDB connection closed")
 
-    
+
+# Start data retrieval
 fill_mongodb_with_flight_data()
